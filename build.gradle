@@ -34,6 +34,7 @@ dependencies {
     implementation 'io.grpc:grpc-netty-shaded:1.69.0'
     implementation 'io.grpc:grpc-protobuf:1.69.0'
     implementation 'io.grpc:grpc-stub:1.69.0'
+    implementation 'com.google.protobuf:protobuf-java:4.29.1'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.kafka:spring-kafka-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
@@ -41,4 +42,26 @@ dependencies {
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+protobuf {
+    protoc {
+        artifact = "com.google.protobuf:protoc:3.25.5"
+    }
+
+    // gRPC codegen plugin (aligning with your runtime gRPC libs)
+    plugins {
+        grpc {
+            artifact = "io.grpc:protoc-gen-grpc-java:1.69.0"
+        }
+    }
+
+    // Apply the gRPC plugin to all proto generation tasks
+    generateProtoTasks {
+        all().each { task ->
+            task.plugins {
+                grpc {}
+            }
+        }
+    }
 }
